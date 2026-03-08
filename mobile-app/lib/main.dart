@@ -22,10 +22,11 @@ class _RainbowAIState extends State<RainbowAI> {
     if (_prompt.text.isEmpty) return;
     setState(() => isLoading = true);
     try {
-      final response = await http.post(
-        Uri.parse('https://rainbow-ai-backend.devsujit.workers.dev/api/generate'),
-        body: jsonEncode({'prompt': _prompt.text}),
-      );
+        final response = await http.post(
+  Uri.parse('https://rainbow-ai-backend.devsujit.workers.dev'), // Sahi URL (No /api/generate)
+  headers: {'Content-Type': 'application/json'},
+  body: jsonEncode({'prompt': _prompt.text}),
+);
       if (response.statusCode == 200) setState(() => aiImage = response.bodyBytes);
     } catch (e) { debugPrint(e.toString()); }
     setState(() => isLoading = false);
