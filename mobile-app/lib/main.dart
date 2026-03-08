@@ -18,33 +18,25 @@ class _RainbowAIState extends State<RainbowAI> {
   bool isLoading = false;
   final TextEditingController _prompt = TextEditingController();
 
+  // IS FUNCTION KA NAAM DHAYAN SE DEKHEIN
   Future<void> generateAIImage() async {
-  String userPrompt = _prompt.text.trim(); // Prompt ko saaf karein
-  if (userPrompt.isEmpty) return; 
-
-  setState(() => isLoading = true);
-  try {
-    final response = await http.post(
-      Uri.parse('https://rainbow-ai-backend.devsujit.workers.dev'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'image/png',
-      },
-      body: jsonEncode({'prompt': userPrompt}), // Dhyan rahe JSON sahi bane
-    );
-
-    if (response.statusCode == 200) {
-      setState(() {
-        aiImage = response.bodyBytes;
-      });
-    } else {
-      // Agar error aaye toh use console mein dekhein
-      debugPrint("Server Error: ${response.body}");
+    String userPrompt = _prompt.text.trim();
+    if (userPrompt.isEmpty) return;
+    
+    setState(() => isLoading = true);
+    try {
+      final response = await http.post(
+        Uri.parse('https://rainbow-ai-backend.devsujit.workers.dev'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'prompt': userPrompt}),
+      );
+      if (response.statusCode == 200) {
+        setState(() => aiImage = response.bodyBytes);
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
     }
-  } catch (e) {
-    debugPrint("App Error: $e");
-  }
-  setState(() => isLoading = false);
+    setState(() => isLoading = false);
   }
 
   @override
@@ -58,8 +50,12 @@ class _RainbowAIState extends State<RainbowAI> {
             child: TextField(
               controller: _prompt,
               decoration: InputDecoration(
-                hintText: "What to color?",
-                suffixIcon: IconButton(icon: const Icon(Icons.auto_awesome), onPressed: getAIImage),
+                hintText: "What do you want to color?",
+                // ONPRESSED MEIN WAHI NAAM HONA CHAHIYE
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.auto_awesome), 
+                  onPressed: generateAIImage
+                ),
               ),
             ),
           ),
