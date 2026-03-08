@@ -5,38 +5,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Create Flutter Project Structure
+      
+      - name: Build From Scratch
         run: |
-          # 1. Purani mobile-app directory ko refresh karo
-          flutter create mobile-app --overwrite --org com.supono.rainbowai
-          
-      - name: Inject Our Custom Code
-        run: |
-          # 2. Demo code ko hamare asli code se badal do
-          # Hum yahan seedha 'cat' command se code likh rahe hain taaki koi galti na ho
-          cat <<EOF > mobile-app/lib/main.dart
-          $(cat mobile-app/lib/main.dart) 
-          EOF
-          # Note: Upar wala step risky ho sakta hai agar file path galat ho. 
-          # Isliye hum seedha overwrite karenge:
-          rm mobile-app/lib/main.dart
-          cp lib_backup/main.dart mobile-app/lib/main.dart || echo "Manual Injection needed"
-
-      - name: Final Build Attempt
-        run: |
-          cd mobile-app
-          # Pubspec dependencies inject karna
-          sed -i '/dependencies:/a \  signature: ^5.4.0\n  http: ^1.1.0' pubspec.yaml
-          flutter pub get
+          # Naya project banao
+          flutter create my_app --org com.sujit.rainbowai
+          # Hamara main.dart copy karo (Jo aapne pehle hi repo mein rakha hai)
+          cp mobile-app/lib/main.dart my_app/lib/main.dart
+          # Dependencies add karo
+          cd my_app
+          flutter pub add signature http
+          # Build karo
           flutter build apk --release --no-tree-shake-icons
-
-      - name: Upload APK
+          
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: RainbowAI-Working-APK
-          path: mobile-app/build/app/outputs/flutter-apk/app-release.apk
+          name: Real-Rainbow-AI
+          path: my_app/build/app/outputs/flutter-apk/app-release.apk
