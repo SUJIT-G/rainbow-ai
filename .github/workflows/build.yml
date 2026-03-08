@@ -1,6 +1,5 @@
-name: Rainbow AI Build
+name: Build APK
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,24 +10,27 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Build Smartly
+      - name: Build Process
         run: |
-          # 1. Naya fresh project banao
-          flutter create temp_app --org com.sujit.rainbowai
+          # 1. Check karo file hai ya nahi
+          ls -R
           
-          # 2. Aapki 'main.dart' file ko dhoondo aur copy karo (Kahin bhi ho)
-          # Ye command poore repo mein main.dart dhoond kar temp_app mein daal degi
-          find . -name "main.dart" -not -path "./temp_app/*" -exec cp {} temp_app/lib/main.dart \;
+          # 2. Fresh project banao
+          flutter create final_build_app --org com.supono.rainbowai
           
-          # 3. Zaroori packages add karo
-          cd temp_app
+          # 3. Hamara code copy karo (Dhyan rahe path sahi ho)
+          # Agar 'mobile-app' folder hai toh wahan se lo
+          cp mobile-app/lib/main.dart final_build_app/lib/main.dart || cp lib/main.dart final_build_app/lib/main.dart
+          
+          # 4. Plugins add karo
+          cd final_build_app
           flutter pub add signature http
           
-          # 4. APK banao
+          # 5. APK banao
           flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload APK
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: RainbowAI-Success
-          path: temp_app/build/app/outputs/flutter-apk/app-release.apk
+          path: final_build_app/build/app/outputs/flutter-apk/app-release.apk
