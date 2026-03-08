@@ -23,7 +23,7 @@ class _RainbowAIState extends State<RainbowAI> {
     setState(() => isLoading = true);
     try {
       final response = await http.post(
-        Uri.parse('https://rainbow-ai-backend.devsujit.workers.dev//api/generate'),
+        Uri.parse('https://rainbow-ai-backend.devsujit.workers.dev/api/generate'),
         body: jsonEncode({'prompt': _prompt.text}),
       );
       if (response.statusCode == 200) setState(() => aiImage = response.bodyBytes);
