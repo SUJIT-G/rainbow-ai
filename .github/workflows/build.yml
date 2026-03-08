@@ -6,31 +6,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Java setup zaroori hai Android build ke liye
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
       - name: Build Process
         run: |
-          # 1. Check karo file hai ya nahi
-          ls -R
+          # Fresh project
+          flutter create final_app --org com.sujit.rainbowai
           
-          # 2. Fresh project banao
-          flutter create final_build_app --org com.supono.rainbowai
+          # Copy our code
+          cp mobile-app/lib/main.dart final_app/lib/main.dart
           
-          # 3. Hamara code copy karo (Dhyan rahe path sahi ho)
-          # Agar 'mobile-app' folder hai toh wahan se lo
-          cp mobile-app/lib/main.dart final_build_app/lib/main.dart || cp lib/main.dart final_build_app/lib/main.dart
-          
-          # 4. Plugins add karo
-          cd final_build_app
+          cd final_app
           flutter pub add signature http
           
-          # 5. APK banao
+          # Build Release APK
           flutter build apk --release --no-tree-shake-icons
 
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: RainbowAI-Success
-          path: final_build_app/build/app/outputs/flutter-apk/app-release.apk
+          name: RainbowAI-Final-APK
+          path: final_app/build/app/outputs/flutter-apk/app-release.apk
