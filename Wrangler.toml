@@ -1,0 +1,12 @@
+name = "rainbow-ai-backend"
+main = "cloud_backend/src/index.ts"
+compatibility_date = "2024-05-01"
+
+# Isse aapka Free Cloudflare AI enable ho jayega
+[ai]
+binding = "AI"
+
+# Agar aap drawings save karna chahte hain toh ye bucket kaam aayegi
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "rainbow-images"
