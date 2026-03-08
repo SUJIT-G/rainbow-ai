@@ -1,28 +1,41 @@
-name: Build APK
+name: Build Rainbow AI APK
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # 1. GitHub se code lo
       - uses: actions/checkout@v4
+
+      # 2. Flutter setup karo
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      
-      - name: Build From Scratch
+
+      # 3. APK banane ka process (One by One)
+      - name: Setup and Build
         run: |
-          # Naya project banao
-          flutter create my_app --org com.sujit.rainbowai
-          # Hamara main.dart copy karo (Jo aapne pehle hi repo mein rakha hai)
-          cp mobile-app/lib/main.dart my_app/lib/main.dart
-          # Dependencies add karo
-          cd my_app
-          flutter pub add signature http
-          # Build karo
-          flutter build apk --release --no-tree-shake-icons
+          # Pehle apne main.dart ka backup lo
+          cp mobile-app/lib/main.dart main_backup.dart
           
-      - name: Upload
+          # Naya android project structure banao
+          flutter create mobile-app --overwrite --org com.rainbow.ai
+          
+          # Backup ko wapas asli jagah rakho (Demo code mita do)
+          rm mobile-app/lib/main.dart
+          mv main_backup.dart mobile-app/lib/main.dart
+          
+          # Zaroori packages add karo
+          cd mobile-app
+          flutter pub add signature http
+          
+          # Release APK build karo
+          flutter build apk --release --no-tree-shake-icons
+
+      # 4. APK ko download ke liye upload karo
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Real-Rainbow-AI
-          path: my_app/build/app/outputs/flutter-apk/app-release.apk
+          name: RainbowAI-Release
+          path: mobile-app/build/app/outputs/flutter-apk/app-release.apk
