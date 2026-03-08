@@ -5,33 +5,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # Java setup zaroori hai Android build ke liye
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '17'
-
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - name: Build Process
+      - name: Build App
         run: |
-          # Fresh project
           flutter create final_app --org com.sujit.rainbowai
-          
-          # Copy our code
           cp mobile-app/lib/main.dart final_app/lib/main.dart
-          
           cd final_app
-          flutter pub add signature http
-          
-          # Build Release APK
+          flutter pub add http
           flutter build apk --release --no-tree-shake-icons
 
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: RainbowAI-Final-APK
+          name: RainbowAI-Working-APK
           path: final_app/build/app/outputs/flutter-apk/app-release.apk
