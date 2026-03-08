@@ -5,13 +5,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - run: flutter pub get
+          
+      # YE STEP JADU KAREGA: Ye missing android folders khud bana dega
+      - name: Create missing Android files
+        run: flutter create . --overwrite
         working-directory: mobile-app
-      - run: flutter build apk --release
+
+      - name: Install dependencies
+        run: flutter pub get
         working-directory: mobile-app
+
+      - name: Build APK
+        run: flutter build apk --release
+        working-directory: mobile-app
+
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
