@@ -1,4 +1,4 @@
-name: Build Rainbow AI APK
+name: Rainbow AI Build
 on: [push]
 
 jobs:
@@ -11,27 +11,24 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Build App
+      - name: Build Smartly
         run: |
-          # 1. Hamara coloring code save karo
-          cp mobile-app/lib/main.dart custom_code.dart
+          # 1. Naya fresh project banao
+          flutter create temp_app --org com.sujit.rainbowai
           
-          # 2. Ek naya fresh app banao
-          flutter create my_final_app --org com.sujit.rainbowai
+          # 2. Aapki 'main.dart' file ko dhoondo aur copy karo (Kahin bhi ho)
+          # Ye command poore repo mein main.dart dhoond kar temp_app mein daal degi
+          find . -name "main.dart" -not -path "./temp_app/*" -exec cp {} temp_app/lib/main.dart \;
           
-          # 3. Demo code hata kar hamara code dalo
-          rm my_final_app/lib/main.dart
-          cp custom_code.dart my_final_app/lib/main.dart
-          
-          # 4. Coloring tool (signature) aur Internet add karo
-          cd my_final_app
+          # 3. Zaroori packages add karo
+          cd temp_app
           flutter pub add signature http
           
-          # 5. APK banao
+          # 4. APK banao
           flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: RainbowAI-Real-App
-          path: my_final_app/build/app/outputs/flutter-apk/app-release.apk
+          name: RainbowAI-Success
+          path: temp_app/build/app/outputs/flutter-apk/app-release.apk
