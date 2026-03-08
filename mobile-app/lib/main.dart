@@ -18,18 +18,33 @@ class _RainbowAIState extends State<RainbowAI> {
   bool isLoading = false;
   final TextEditingController _prompt = TextEditingController();
 
-  Future<void> getAIImage() async {
-    if (_prompt.text.isEmpty) return;
-    setState(() => isLoading = true);
-    try {
-        final response = await http.post(
-  Uri.parse('https://rainbow-ai-backend.devsujit.workers.dev'), // Sahi URL (No /api/generate)
-  headers: {'Content-Type': 'application/json'},
-  body: jsonEncode({'prompt': _prompt.text}),
-);
-      if (response.statusCode == 200) setState(() => aiImage = response.bodyBytes);
-    } catch (e) { debugPrint(e.toString()); }
-    setState(() => isLoading = false);
+  Future<void> generateAIImage() async {
+  String userPrompt = _prompt.text.trim(); // Prompt ko saaf karein
+  if (userPrompt.isEmpty) return; 
+
+  setState(() => isLoading = true);
+  try {
+    final response = await http.post(
+      Uri.parse('https://rainbow-ai-backend.devsujit.workers.dev'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'image/png',
+      },
+      body: jsonEncode({'prompt': userPrompt}), // Dhyan rahe JSON sahi bane
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        aiImage = response.bodyBytes;
+      });
+    } else {
+      // Agar error aaye toh use console mein dekhein
+      debugPrint("Server Error: ${response.body}");
+    }
+  } catch (e) {
+    debugPrint("App Error: $e");
+  }
+  setState(() => isLoading = false);
   }
 
   @override
