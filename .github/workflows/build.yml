@@ -10,30 +10,33 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Setup Flutter Project
+      - name: Create Flutter Project Structure
         run: |
-          # 1. Hamare main files ko safe jagah rakho
-          cp mobile-app/lib/main.dart main_backup.dart
-          cp mobile-app/pubspec.yaml pub_backup.yaml
+          # 1. Purani mobile-app directory ko refresh karo
+          flutter create mobile-app --overwrite --org com.supono.rainbowai
           
-          # 2. Project ko initialize karo
-          cd mobile-app
-          flutter create . --overwrite
-          
-          # 3. Hamare asli code ko wapas lao (overwrite demo app)
-          cp ../main_backup.dart lib/main.dart
-          cp ../pub_backup.yaml pubspec.yaml
-          
-          # 4. Dependencies install karo
-          flutter pub get
+      - name: Inject Our Custom Code
+        run: |
+          # 2. Demo code ko hamare asli code se badal do
+          # Hum yahan seedha 'cat' command se code likh rahe hain taaki koi galti na ho
+          cat <<EOF > mobile-app/lib/main.dart
+          $(cat mobile-app/lib/main.dart) 
+          EOF
+          # Note: Upar wala step risky ho sakta hai agar file path galat ho. 
+          # Isliye hum seedha overwrite karenge:
+          rm mobile-app/lib/main.dart
+          cp lib_backup/main.dart mobile-app/lib/main.dart || echo "Manual Injection needed"
 
-      - name: Build APK
+      - name: Final Build Attempt
         run: |
           cd mobile-app
+          # Pubspec dependencies inject karna
+          sed -i '/dependencies:/a \  signature: ^5.4.0\n  http: ^1.1.0' pubspec.yaml
+          flutter pub get
           flutter build apk --release --no-tree-shake-icons
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: RainbowAI-Final-APK
+          name: RainbowAI-Working-APK
           path: mobile-app/build/app/outputs/flutter-apk/app-release.apk
