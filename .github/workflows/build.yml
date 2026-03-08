@@ -4,21 +4,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4 # Updated to v4
+
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: Setup Project
+
+      - name: Create Android Files
         run: |
           cd mobile-app
           flutter create . --overwrite
-          flutter pub get
-      - name: Build Release APK
+
+      - name: Get Dependencies
         run: |
           cd mobile-app
-          flutter build apk --release
+          flutter pub get
+
+      - name: Build APK
+        run: |
+          cd mobile-app
+          flutter build apk --release --no-tree-shake-icons
+
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # ISSE ERROR THEEK HO JAYEGA (v4)
         with:
           name: RainbowAI-APK
           path: mobile-app/build/app/outputs/flutter-apk/app-release.apk
