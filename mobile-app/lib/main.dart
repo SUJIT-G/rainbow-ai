@@ -22,7 +22,6 @@ class _RainbowAppState extends State<RainbowApp> {
     if (_promptText.text.isEmpty) return;
     setState(() => isLoading = true);
     try {
-      // Replace with your Cloudflare Worker URL later
       final response = await http.post(
         Uri.parse('https://your-worker.workers.dev/api/generate'), 
         body: jsonEncode({'prompt': _promptText.text}),
@@ -31,7 +30,7 @@ class _RainbowAppState extends State<RainbowApp> {
         setState(() => aiImage = response.bodyBytes);
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
     }
     setState(() => isLoading = false);
   }
@@ -48,7 +47,7 @@ class _RainbowAppState extends State<RainbowApp> {
               controller: _promptText,
               decoration: InputDecoration(
                 hintText: "What to color? (e.g. Cat, Robot)",
-                suffixIcon: IconButton(icon: const Icon(Icons.magic_button), onPressed: generateAIImage),
+                suffixIcon: IconButton(icon: const Icon(Icons.auto_awesome), onPressed: generateAIImage),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
               ),
             ),
@@ -72,11 +71,11 @@ class _RainbowAppState extends State<RainbowApp> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                IconButton(icon: const Icon(Icons.refresh, color: Colors.black), onPressed: () => _controller.clear()),
-                _colorPicker(Colors.red),
-                _colorPicker(Colors.blue),
-                _colorPicker(Colors.green),
-                _colorPicker(Colors.orange),
+                IconButton(icon: const Icon(Icons.refresh), onPressed: () => _controller.clear()),
+                _colorBtn(Colors.red),
+                _colorBtn(Colors.blue),
+                _colorBtn(Colors.green),
+                _colorBtn(Colors.orange),
               ],
             ),
           )
@@ -85,7 +84,7 @@ class _RainbowAppState extends State<RainbowApp> {
     );
   }
 
-  Widget _colorPicker(Color color) {
+  Widget _colorBtn(Color color) {
     return GestureDetector(
       onTap: () => setState(() => _controller.penColor = color),
       child: CircleAvatar(backgroundColor: color, radius: 15),
