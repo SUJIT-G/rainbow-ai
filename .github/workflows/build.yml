@@ -4,20 +4,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # Updated to v4
+      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - name: Create Android Files
+      - name: Setup Flutter Project
         run: |
+          # 1. Hamare main files ko safe jagah rakho
+          cp mobile-app/lib/main.dart main_backup.dart
+          cp mobile-app/pubspec.yaml pub_backup.yaml
+          
+          # 2. Project ko initialize karo
           cd mobile-app
           flutter create . --overwrite
-
-      - name: Get Dependencies
-        run: |
-          cd mobile-app
+          
+          # 3. Hamare asli code ko wapas lao (overwrite demo app)
+          cp ../main_backup.dart lib/main.dart
+          cp ../pub_backup.yaml pubspec.yaml
+          
+          # 4. Dependencies install karo
           flutter pub get
 
       - name: Build APK
@@ -25,8 +32,8 @@ jobs:
           cd mobile-app
           flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4 # ISSE ERROR THEEK HO JAYEGA (v4)
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
-          name: RainbowAI-APK
+          name: RainbowAI-Final-APK
           path: mobile-app/build/app/outputs/flutter-apk/app-release.apk
